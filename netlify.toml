@@ -1,0 +1,1 @@
+[build]\ncommand = "python -m pip install -r requirements.txt && python scripts/build.py"\npublish = "dist"\n\n[build.environment]\nPYTHON_VERSION = "3.13"\n
