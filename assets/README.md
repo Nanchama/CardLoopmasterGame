@@ -1,8 +1,9 @@
 # Chronoloop approved PWA icons
 
-Place the two *original* approved PNG icon files in this directory:
+This directory contains the exact approved app-icon artwork.
+The 192px PNG is kept as a binary file.
+The 512px PNG is stored as nine Base64 text parts because of a binary-transfer limitation.
+`scripts/build.py` concatenates/decodes these parts and validates SHA-256 so the emitted
+`dist/icon-512.png` is byte-for-byte identical to the approved 512px PNG.
 
-- `icon-192.png`
-- `icon-512.png`
-
-The Netlify build script copies these images directly without redrawing them. If absent, it displays an explicit warning and generates a temporary icon for build testing only.
+Do not replace these assets with programmatically redrawn art.

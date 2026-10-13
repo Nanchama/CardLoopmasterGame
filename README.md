@@ -19,7 +19,7 @@
 - Netlify下部表示の誤タップ対策余白
 - noindex / robots.txt
 - ビルド時にスプラッシュ・タイトル埋め込みPNGをWebP化
-- `assets/icon-192.png` と `assets/icon-512.png` があれば採用済み画像を変更せず公開用フォルダへコピー。未登録の場合は仮アイコンを生成（※採用デザインとは異なる）
+- 採用済みアプリアイコンを元データから**再生成せず復元**し、SHA-256で検証
 - Service Worker cache: `chronoloop-pwa-v6`
 
 ## Netlify
@@ -30,15 +30,21 @@ Netlifyは `netlify.toml` に従って以下を自動実行します。
 1. Pillowをインストール
 2. 分割されたHTMLソースを再結合
 3. 埋め込みPNGをWebPへ軽量化
-4. `assets/` に採用アイコンがあればそのままコピー、未登録の場合は仮アイコンを生成
+4. 採用済みアプリアイコンPNGを元ファイルと一致する状態で復元
 5. `dist/` に公開用ファイルを生成
 
 Publish directory は `dist` です。
 
-## 採用済みアプリアイコンの反映（未完了）
-現在、画像本体のバイナリデータはまだGitHubに登録されていません。
-`test-preview` ブランチの `assets/` に下記の2ファイルを追加してください。
-- `assets/icon-192.png` — SHA-256: `6590aea2ab0cf10a76797d4cc651869cfdadf54f90eb50b0c62360b3e66e2c3f`
-- `assets/icon-512.png` — SHA-256: `9c46b45412696c659fb60cad19745cbb21f322152259cf0e0c32ada3884c4c28`
+## 採用済みアプリアイコン
+採用された元画像はGitHubに登録済みです。Netlifyビルド時に**バイト単位で復元し、絵を再生成しません**。
 
-追加後は再ビルドすると、採用画像をそのままホーム画面アイコンに使います。
+- `assets/icon-192.png` — 採用済みPNG（192px）
+- `assets/icon-512.part001.b64` ～ `part009.b64` — 512pxの採用済みPNGをBase64分割保存
+- `scripts/build.py` が復元しSHA-256を照合して `dist/icon-192.png` と `dist/icon-512.png` を生成します。
+- 見た目の再生成・再描画や再圧縮はしません。
+
+## テストデプロイ
+- `main` は公開用。編集はまず `test-preview` にコミットします。
+- `test-preview` から `main` へのDraft Pull Request #1 を用意しています。NetlifyがGitHubリポジトリと連携され、Deploy Previewを有効にしている場合、Netlify側でプレビューを生成できます。
+- PRとは別に `test-preview` のBranch deployを有効にする運用もできます。
+- ビルド設定は `netlify.toml`（command / publish=dist）です。
