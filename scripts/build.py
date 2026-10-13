@@ -101,6 +101,19 @@ def make_icon(size):
     return img
 
 def build_icons():
+    # Exact, user-approved artwork takes priority over any generated fallback.
+    icon_dir = ROOT / "assets"
+    source_icons = [icon_dir / "icon-192.png", icon_dir / "icon-512.png"]
+    if all(p.is_file() for p in source_icons):
+        for source in source_icons:
+            shutil.copy2(source, DIST / source.name)
+        print("Using original approved PNG app icons from assets/")
+        return
+    if any(p.is_file() for p in source_icons):
+        raise RuntimeError("Both assets/icon-192.png and assets/icon-512.png are required")
+
+    # Temporary fallback only. The generated design is NOT the approved artwork.
+    print("WARNING: Original app icons missing in assets/. Using temporary generated icons.")
     make_icon(512).save(DIST / "icon-512.png", "PNG")
     make_icon(192).save(DIST / "icon-192.png", "PNG")
 
@@ -118,7 +131,7 @@ def main():
 
     print(f"Built index.html: {len(html.encode('utf-8'))/1024/1024:.2f} MB")
     print(f"Embedded PNG -> WebP conversions: {converted}")
-    print("Generated Chronoloop app icons: 192px / 512px")
+    print("Chronoloop PWA icons: 192px / 512px")
 
 if __name__ == "__main__":
     main()
